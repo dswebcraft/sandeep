@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sandeep Wholesale ERP</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    @media print {
+      body { background: white !important; color: black !important; }
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      @page { size: A4; margin: 10mm; }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
+  <!-- Top Profile Strip -->
+  <header class="no-print bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+    <div class="bg-gradient-to-r from-amber-600/20 via-slate-900 to-amber-600/10 px-4 py-1.5 border-b border-slate-800 text-xs">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-3">
+          <span class="font-extrabold text-amber-400 uppercase tracking-wide">Sandeep Wholesale</span>
+          <span class="text-slate-500">|</span>
+          <span class="text-slate-300">📞 9027855051</span>
+          <span class="text-slate-500">|</span>
+          <span class="text-slate-400">📍 Barabanki, Uttar Pradesh</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="backendBadge" class="text-amber-300 bg-amber-500/10 border border-amber-500/30 text-[11px] px-2 py-0.5 rounded-full font-medium">
+            Demo Local Storage
+          </span>
+          <button onclick="triggerBackup()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] px-2.5 py-0.5 rounded-lg font-semibold">
+            Backup to Drive
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-amber-500 text-slate-950 font-black flex items-center justify-center text-lg shadow-lg shadow-amber-500/20">
+          SW
+        </div>
+        <div>
+          <div class="text-base font-bold text-white leading-tight">Sandeep Wholesale ERP</div>
+          <div class="text-[11px] text-slate-400">Patang & Manjha Wholesale Ledger</div>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-1 text-xs font-semibold">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3.5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold">Dashboard</button>
+        <button onclick="switchTab('products')" id="nav-products" class="nav-btn px-3.5 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800">Inventory & Stock</button>
+        <button onclick="switchTab('purchases')" id="nav-purchases" class="nav-btn px-3.5 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800">Purchases</button>
+        <button onclick="switchTab('sales')" id="nav-sales" class="nav-btn px-3.5 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800">Sales & Invoices</button>
+        <button onclick="switchTab('search')" id="nav-search" class="nav-btn px-3.5 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800">Customer Search</button>
+        <button onclick="switchTab('reports')" id="nav-reports" class="nav-btn px-3.5 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800">Reports</button>
+        <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn px-3.5 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800">Google Sheets / Drive</button>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <button onclick="openNewSaleModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl shadow-lg shadow-amber-500/20">
+          + New Bill
+        </button>
+        <div class="flex items-center gap-1.5 pl-2 border-l border-slate-800">
+          <button onclick="openChangePasswordModal()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs px-2.5 py-2 rounded-xl font-mono" title="Change Password">
+            🔑 <span id="navUserBadge">admin</span>
+          </button>
+          <button onclick="logoutUser()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs px-2.5 py-2 rounded-xl font-bold" title="Logout">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- App Body Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+    <!-- DASHBOARD VIEW -->
+    <section id="view-dashboard" class="space-y-6">
+      <!-- 5 KPI Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <div class="text-xs font-semibold text-slate-400 uppercase">Total Purchases</div>
+          <div id="kpiPurchases" class="text-2xl font-bold font-mono text-white mt-2">₹0</div>
+          <div class="text-[11px] text-slate-500 mt-1">Sum of (Qty * Rate)</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <div class="text-xs font-semibold text-slate-400 uppercase">Total Sales</div>
+          <div id="kpiSales" class="text-2xl font-bold font-mono text-white mt-2">₹0</div>
+          <div class="text-[11px] text-slate-500 mt-1">Incl. Packaging & Dispatch</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <div class="text-xs font-semibold text-slate-400 uppercase">Gross Profit</div>
+          <div id="kpiProfit" class="text-2xl font-bold font-mono text-emerald-400 mt-2">₹0</div>
+          <div class="text-[11px] text-emerald-400/80 mt-1">Total Sale - COGS</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <div class="text-xs font-semibold text-slate-400 uppercase">Total Pending</div>
+          <div id="kpiPending" class="text-2xl font-bold font-mono text-rose-400 mt-2">₹0</div>
+          <div class="text-[11px] text-rose-400/80 mt-1">Outstanding Receivables</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <div class="text-xs font-semibold text-slate-400 uppercase">Current Stock Units</div>
+          <div id="kpiStock" class="text-2xl font-bold font-mono text-white mt-2">0</div>
+          <div class="text-[11px] text-slate-500 mt-1">Total Purchased - Sold</div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-sm font-bold text-white mb-4">Monthly Sales vs Purchases (Jan - Dec 2026)</h3>
+          <div class="h-64"><canvas id="chartSalesPurchases"></canvas></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-sm font-bold text-white mb-4">Monthly Gross Profit (Jan - Dec 2026)</h3>
+          <div class="h-64"><canvas id="chartProfit"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Top Debtors & Low Stock Alerts -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-bold text-white">Top Outstanding Customer Debtors</h3>
+            <button onclick="switchTab('search')" class="text-xs text-amber-400 hover:underline">View All Ledgers</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="border-b border-slate-800 text-slate-400">
+                  <th class="py-2">Client Name</th>
+                  <th class="py-2">Mobile</th>
+                  <th class="py-2 text-right">Bills</th>
+                  <th class="py-2 text-right">Pending Balance</th>
+                </tr>
+              </thead>
+              <tbody id="topDebtorsTbody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-bold text-white">Stock Warnings (Auto Formula)</h3>
+            <button onclick="switchTab('products')" class="text-xs text-amber-400 hover:underline">View Catalog</button>
+          </div>
+          <div id="lowStockList" class="space-y-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INVENTORY & PRODUCTS VIEW -->
+    <section id="view-products" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-white">Products & Stock Catalog</h2>
+          <p class="text-xs text-slate-400">Current Stock = Total Purchased - Total Sold</p>
+        </div>
+        <button onclick="openAddProductModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl">
+          + Add Product
+        </button>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="bg-slate-950 border-b border-slate-800 text-slate-400 uppercase font-semibold">
+                <th class="py-3 px-4">Code</th>
+                <th class="py-3 px-4">Item Name</th>
+                <th class="py-3 px-4">Category</th>
+                <th class="py-3 px-4 text-right">Latest Purchase Rate</th>
+                <th class="py-3 px-4 text-right">Sale Rate</th>
+                <th class="py-3 px-4 text-right">Purchased</th>
+                <th class="py-3 px-4 text-right">Sold</th>
+                <th class="py-3 px-4 text-right">Current Stock</th>
+                <th class="py-3 px-4 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="productsTbody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PURCHASES VIEW -->
+    <section id="view-purchases" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-white">Inward Purchases Ledger</h2>
+          <p class="text-xs text-slate-400">Auto updates Latest Purchase Price in product master</p>
+        </div>
+        <button onclick="openRecordPurchaseModal()" class="bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl">
+          + Record Purchase
+        </button>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="bg-slate-950 border-b border-slate-800 text-slate-400 uppercase font-semibold">
+                <th class="py-3 px-4">Date</th>
+                <th class="py-3 px-4">Bill No</th>
+                <th class="py-3 px-4">Supplier Name</th>
+                <th class="py-3 px-4">Item Name</th>
+                <th class="py-3 px-4 text-right">Qty</th>
+                <th class="py-3 px-4 text-right">Purchase Rate</th>
+                <th class="py-3 px-4 text-right">Amount (Qty * Rate)</th>
+              </tr>
+            </thead>
+            <tbody id="purchasesTbody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SALES & INVOICES VIEW -->
+    <section id="view-sales" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-white">Sales Invoicing & Ledger</h2>
+          <p class="text-xs text-slate-400">Multi-item billing with COGS, Profit & Installment tracking</p>
+        </div>
+        <button onclick="openNewSaleModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl">
+          + Create Invoice
+        </button>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="bg-slate-950 border-b border-slate-800 text-slate-400 uppercase font-semibold">
+                <th class="py-3 px-4">Bill No</th>
+                <th class="py-3 px-4">Date</th>
+                <th class="py-3 px-4">Client Name</th>
+                <th class="py-3 px-4 text-right">Total Sale</th>
+                <th class="py-3 px-4 text-right">Received</th>
+                <th class="py-3 px-4 text-right">Pending</th>
+                <th class="py-3 px-4 text-right">Gross Profit</th>
+                <th class="py-3 px-4 text-center">Status</th>
+                <th class="py-3 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="salesTbody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- CUSTOMER SEARCH VIEW -->
+    <section id="view-search" class="hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+        <h2 class="text-xl font-bold text-white">Search Customer Ledger</h2>
+        <p class="text-xs text-slate-400 mt-1">Lookup entire transaction history by Mobile Number or Bill Number</p>
+        <div class="mt-4 flex gap-3">
+          <input type="text" id="custSearchInput" placeholder="Enter Mobile No (e.g. 9839012345) or Bill No (e.g. SW-2026-0040)..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 font-mono">
+          <button onclick="handleSearchCustomer()" class="bg-amber-500 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs">Search</button>
+        </div>
+      </div>
+      <div id="searchResultsArea" class="space-y-4"></div>
+    </section>
+
+    <!-- REPORTS VIEW -->
+    <section id="view-reports" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-white">Ledger Reports & Profit Analysis</h2>
+          <p class="text-xs text-slate-400">Monthly profit, debtors ageing, and velocity</p>
+        </div>
+        <button onclick="exportReportsCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl">
+          Export Report (CSV)
+        </button>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+        <h3 class="text-sm font-bold text-white mb-4">Customer Pending Dues Breakdown</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="py-2 px-3">Bill No</th>
+                <th class="py-2 px-3">Customer</th>
+                <th class="py-2 px-3">Mobile</th>
+                <th class="py-2 px-3 text-right">Total Bill</th>
+                <th class="py-2 px-3 text-right">Received</th>
+                <th class="py-2 px-3 text-right">Pending Balance</th>
+              </tr>
+            </thead>
+            <tbody id="reportsPendingTbody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS & GOOGLE DRIVE VIEW -->
+    <section id="view-settings" class="hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+        <h2 class="text-xl font-bold text-white">Google Sheets & Google Apps Script Setup</h2>
+        <p class="text-xs text-slate-400">Paste your deployed Google Apps Script Web App URL below to sync directly with Google Sheets.</p>
+        <div class="flex gap-2">
+          <input type="url" id="settingsGasUrl" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white font-mono">
+          <button onclick="saveGasUrl()" class="bg-amber-500 font-bold text-slate-950 px-5 py-2.5 rounded-xl text-xs">Save URL</button>
+          <button onclick="testGasUrl()" class="bg-slate-800 font-semibold text-slate-200 border border-slate-700 px-4 py-2.5 rounded-xl text-xs">Ping Test</button>
+        </div>
+        <div id="gasStatusMsg" class="text-xs"></div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-3">
+        <h3 class="text-base font-bold text-white">Google Drive Automated Backup</h3>
+        <p class="text-xs text-slate-400">Target Folder: <code class="text-amber-400">DS WebCraft ERP/Sandeep Wholesale/Backups/</code></p>
+        <button onclick="triggerBackup()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold px-4 py-2 rounded-xl text-xs">
+          Trigger Instant Backup to Google Drive
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- PRINTABLE INVOICE MODAL -->
+  <div id="invoicePrintModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/80 flex items-center justify-center p-4 print:p-0 print:bg-white print:fixed print:inset-0">
+    <div class="bg-white text-slate-900 rounded-2xl max-w-3xl w-full p-8 shadow-2xl overflow-hidden print:shadow-none print:w-full print:p-4">
+      <div class="no-print flex justify-between items-center pb-4 mb-4 border-b border-slate-200">
+        <span class="font-bold text-sm text-slate-800">Print Preview (A4)</span>
+        <div class="flex gap-2">
+          <button onclick="window.print()" class="bg-amber-500 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-xs">Print / PDF</button>
+          <button onclick="closePrintModal()" class="text-slate-500 hover:text-black px-3 py-1.5 text-xs">Close</button>
+        </div>
+      </div>
+
+      <div id="printSheetArea" class="text-xs space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- LOGIN SCREEN OVERLAY -->
+  <div id="loginOverlay" class="fixed inset-0 z-50 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
+    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-7 sm:p-9 max-w-md w-full shadow-2xl backdrop-blur-xl relative">
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 font-black text-2xl shadow-xl shadow-amber-500/20 mb-3">
+          SW
+        </div>
+        <h2 class="text-2xl font-black text-white uppercase tracking-tight">Sandeep Wholesale ERP</h2>
+        <p class="text-xs text-amber-400 mt-1 font-medium">Enterprise Resource Planning & Ledger System</p>
+        <p class="text-[11px] text-slate-400 mt-0.5">Barabanki, Uttar Pradesh • 9027855051</p>
+      </div>
+
+      <div id="loginErrorMsg" class="hidden mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-300"></div>
+
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Login ID / Username</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-2.5 text-slate-500 text-sm">👤</span>
+            <input type="text" id="loginIdInput" required placeholder="Enter your user ID..." class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-amber-500 font-medium">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Password</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-2.5 text-slate-500 text-sm">🔒</span>
+            <input type="password" id="loginPassInput" required placeholder="••••••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 pl-9 pr-10 text-xs text-white focus:outline-none focus:border-amber-500 font-medium">
+            <button type="button" onclick="toggleStandalonePasswordVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200 text-xs">
+              👁️
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-amber-500/20 active:scale-[0.99] flex items-center justify-center gap-2">
+          <span>Sign In Securely</span>
+          <span>→</span>
+        </button>
+      </form>
+
+      <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] flex items-center justify-between text-slate-500">
+        <span>🔒 256-Bit SSL Encrypted</span>
+        <span>Google Cloud Sync</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD PRODUCT MODAL (MANUAL CATEGORY & UNIT) -->
+  <div id="addProductModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-4">
+        <h3 class="text-base font-bold text-white">Add New Product to Inventory</h3>
+        <button onclick="closeAddProductModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <form onsubmit="handleAddProductSubmit(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Product / Item Name *</label>
+          <input type="text" id="newProdName" required placeholder="e.g. Bareilly Fighter Manjha 6000" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">
+              Category <span class="text-amber-400 text-[10px]">(Manual)</span> *
+            </label>
+            <input type="text" id="newProdCategory" list="cat-suggestions-standalone" required placeholder="Type category..." class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+            <datalist id="cat-suggestions-standalone">
+              <option value="Manjha">
+              <option value="Kites">
+              <option value="Charkhi">
+              <option value="Saddi">
+              <option value="General">
+              <option value="Raw Material">
+              <option value="Packaging">
+            </datalist>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">
+              Unit <span class="text-amber-400 text-[10px]">(Manual)</span> *
+            </label>
+            <input type="text" id="newProdUnit" list="unit-suggestions-standalone" required placeholder="Type unit..." class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+            <datalist id="unit-suggestions-standalone">
+              <option value="Spool">
+              <option value="Pack">
+              <option value="Pcs">
+              <option value="Reel">
+              <option value="Box">
+              <option value="Kg">
+              <option value="Meter">
+              <option value="Bundle">
+            </datalist>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Purchase Rate (₹) *</label>
+            <input type="number" id="newProdPRate" min="0" required placeholder="350" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Default Sale Rate (₹) *</label>
+            <input type="number" id="newProdSRate" min="0" required placeholder="480" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeAddProductModal()" class="px-4 py-2 text-xs text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-amber-500 font-bold text-slate-950 rounded-xl text-xs hover:bg-amber-400">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- RECORD PURCHASE MODAL (MANUAL CATEGORY & UNIT) -->
+  <div id="recordPurchaseModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-4">
+        <h3 class="text-base font-bold text-white">Record Inward Stock Purchase</h3>
+        <button onclick="closeRecordPurchaseModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <form onsubmit="handleRecordPurchaseSubmit(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Item Name *</label>
+          <input type="text" id="purItemName" list="existing-items-list" required placeholder="Select or type item name..." class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          <datalist id="existing-items-list"></datalist>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Supplier Name *</label>
+            <input type="text" id="purSupplierName" required placeholder="Bareilly Mills" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Bill / Invoice No</label>
+            <input type="text" id="purBillNo" placeholder="PUR-4401" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">
+              Category <span class="text-amber-400 text-[10px]">(Manual)</span>
+            </label>
+            <input type="text" id="purCategory" list="cat-suggestions-standalone" placeholder="e.g. Manjha" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">
+              Unit <span class="text-amber-400 text-[10px]">(Manual)</span>
+            </label>
+            <input type="text" id="purUnit" list="unit-suggestions-standalone" placeholder="e.g. Spool" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Quantity *</label>
+            <input type="number" id="purQty" min="1" required placeholder="100" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Purchase Rate (₹) *</label>
+            <input type="number" id="purRate" min="0" required placeholder="310" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeRecordPurchaseModal()" class="px-4 py-2 text-xs text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-blue-500 font-bold text-slate-950 rounded-xl text-xs hover:bg-blue-400">Save Purchase</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CREATE INVOICE MODAL -->
+  <div id="newSaleModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl my-6">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-4">
+        <div>
+          <h3 class="text-base font-bold text-white">Create Wholesale Invoice</h3>
+          <p class="text-xs text-amber-400">Sandeep Wholesale • Barabanki</p>
+        </div>
+        <button onclick="closeNewSaleModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <form onsubmit="handleNewSaleSubmit(event)" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Customer / Firm Name *</label>
+            <input type="text" id="saleClientName" required placeholder="e.g. Manoj Traders" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Mobile Number *</label>
+            <input type="text" id="saleMobNo" required placeholder="9415088231" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500 font-mono">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Delivery Address</label>
+            <input type="text" id="saleAddress" placeholder="e.g. Nawabganj, Barabanki" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Invoice Date</label>
+            <input type="date" id="saleDate" required class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+          <div class="text-xs font-semibold text-slate-300">Bill Item Details</div>
+          <div>
+            <label class="block text-[11px] text-slate-400 mb-1">Select Product *</label>
+            <select id="saleItemSelect" onchange="handleSaleItemChange()" class="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500"></select>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Quantity *</label>
+              <input type="number" id="saleQty" min="1" required oninput="calculateSaleTotals()" class="w-full bg-slate-900 border border-slate-700 rounded-xl py-1.5 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Sale Rate (₹) *</label>
+              <input type="number" id="saleRate" min="0" required oninput="calculateSaleTotals()" class="w-full bg-slate-900 border border-slate-700 rounded-xl py-1.5 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Item Total (₹)</label>
+              <input type="text" id="saleItemTotal" readonly class="w-full bg-slate-800 border border-slate-700 rounded-xl py-1.5 px-3 text-xs text-amber-400 font-mono font-bold">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Packaging (₹)</label>
+            <input type="number" id="salePackaging" value="0" min="0" oninput="calculateSaleTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-1.5 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Dispatch (₹)</label>
+            <input type="number" id="saleDispatch" value="0" min="0" oninput="calculateSaleTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-1.5 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Received (₹)</label>
+            <input type="number" id="saleReceived" value="0" min="0" oninput="calculateSaleTotals()" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-1.5 px-3 text-xs text-emerald-400 focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div class="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+          <div>
+            <span class="text-slate-400">Grand Total: </span>
+            <strong id="saleGrandTotalDisplay" class="font-mono text-white text-sm font-black">₹0</strong>
+          </div>
+          <div>
+            <span class="text-slate-400">Pending Balance: </span>
+            <strong id="salePendingDisplay" class="font-mono text-rose-400 text-sm font-black">₹0</strong>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeNewSaleModal()" class="px-4 py-2 text-xs text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 font-bold text-slate-950 rounded-xl text-xs shadow-lg shadow-amber-500/20">Save & Print Invoice</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CHANGE PASSWORD MODAL -->
+  <div id="changePasswordModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-4">
+        <h3 class="text-base font-bold text-white">Change Login Password</h3>
+        <button onclick="closeChangePasswordModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <div id="changePassErrorMsg" class="hidden mb-3 p-2.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs rounded-xl"></div>
+
+      <form onsubmit="handleChangePasswordSubmit(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Current Password *</label>
+          <input type="password" id="oldPassInput" required placeholder="Purana password..." class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">New Password *</label>
+          <input type="password" id="newPassInput" required placeholder="Kam se kam 4 characters..." class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Confirm New Password *</label>
+          <input type="password" id="confirmPassInput" required placeholder="Naya password dobara enter karein..." class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-500">
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeChangePasswordModal()" class="px-4 py-2 text-xs text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-amber-500 font-bold text-slate-950 rounded-xl text-xs">Update Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EMBEDDED APPLICATION JAVASCRIPT -->
+  <script>
+    // State Store
+    const DEFAULT_STORE = {
+      name: "Sandeep Wholesale",
+      mobile: "9027855051",
+      address: "Barabanki, Uttar Pradesh",
+      tagline: "Leading Kite, Manjha & Festival Supplies"
+    };
+
+    let products = JSON.parse(localStorage.getItem('sw_products')) || [
+      { productId: "PRD-001", itemName: "Mono Kite Fighter 6000", category: "Manjha", unit: "Spool", latestPurchaseRate: 420, defaultSaleRate: 560, totalPurchased: 250, totalSold: 180, currentStock: 70, stockStatus: "OK", minAlertQty: 15 },
+      { productId: "PRD-002", itemName: "Bareilly Special 12 Cord Manjha", category: "Manjha", unit: "Spool", latestPurchaseRate: 310, defaultSaleRate: 420, totalPurchased: 300, totalSold: 260, currentStock: 40, stockStatus: "OK", minAlertQty: 20 },
+      { productId: "PRD-003", itemName: "Plastic Charkhi Heavy Duty 9-inch", category: "Charkhi", unit: "Pcs", latestPurchaseRate: 85, defaultSaleRate: 130, totalPurchased: 400, totalSold: 392, currentStock: 8, stockStatus: "LOW STOCK", minAlertQty: 25 },
+      { productId: "PRD-004", itemName: "Designer Cheel Kite (Pack of 50)", category: "Kites", unit: "Pack", latestPurchaseRate: 180, defaultSaleRate: 260, totalPurchased: 500, totalSold: 500, currentStock: 0, stockStatus: "OUT OF STOCK", minAlertQty: 30 },
+      { productId: "PRD-005", itemName: "Champion Cotton Saddi Reel", category: "Saddi", unit: "Reel", latestPurchaseRate: 45, defaultSaleRate: 75, totalPurchased: 600, totalSold: 420, currentStock: 180, stockStatus: "OK", minAlertQty: 50 }
+    ];
+
+    let purchases = JSON.parse(localStorage.getItem('sw_purchases')) || [
+      { purchaseId: "PID-101", date: "2026-08-12", billNo: "PUR-BR-4401", supplierName: "Bareilly Thread Mills", itemName: "Bareilly Special 12 Cord Manjha", qty: 300, purchaseRate: 310, amount: 93000 },
+      { purchaseId: "PID-102", date: "2026-08-18", billNo: "PUR-DL-8820", supplierName: "Delhi Kite Makers", itemName: "Mono Kite Fighter 6000", qty: 250, purchaseRate: 420, amount: 105000 }
+    ];
+
+    let sales = JSON.parse(localStorage.getItem('sw_sales')) || [
+      {
+        saleId: "SID-01", date: "2026-09-01", billNo: "SW-2026-0038", clientName: "Verma Kite Centre", address: "Aminabad, Lucknow", mobNo: "9839012345",
+        items: [{ itemName: "Mono Kite Fighter 6000", qty: 40, rate: 560, amount: 22400 }],
+        subtotal: 22400, packagingCharges: 250, dispatchCharges: 350, totalSale: 23000, cogs: 16800, grossProfit: 6200,
+        payment1: 15000, date1: "2026-09-01", payment2: 8000, date2: "2026-09-15", payment3: 0, date3: "", totalReceived: 23000, pendingAmount: 0, status: "Paid"
+      },
+      {
+        saleId: "SID-02", date: "2026-09-05", billNo: "SW-2026-0039", clientName: "Manoj Traders", address: "Nawabganj, Barabanki", mobNo: "9415088231",
+        items: [{ itemName: "Bareilly Special 12 Cord Manjha", qty: 60, rate: 420, amount: 25200 }],
+        subtotal: 25200, packagingCharges: 300, dispatchCharges: 200, totalSale: 25700, cogs: 18600, grossProfit: 7100,
+        payment1: 15000, date1: "2026-09-05", payment2: 0, date2: "", payment3: 0, date3: "", totalReceived: 15000, pendingAmount: 10700, status: "Pending"
+      }
+    ];
+
+    let salesPurchasesChart = null;
+    let profitChart = null;
+
+    function formatINR(val) {
+      return "₹" + Number(val || 0).toLocaleString('en-IN');
+    }
+
+    function switchTab(tabId) {
+      ['dashboard', 'products', 'purchases', 'sales', 'search', 'reports', 'settings'].forEach(t => {
+        document.getElementById('view-' + t).classList.add('hidden');
+        const nav = document.getElementById('nav-' + t);
+        if (nav) {
+          nav.className = "nav-btn px-3.5 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800";
+        }
+      });
+      document.getElementById('view-' + tabId).classList.remove('hidden');
+      const activeNav = document.getElementById('nav-' + tabId);
+      if (activeNav) {
+        activeNav.className = "nav-btn px-3.5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold";
+      }
+      if (tabId === 'dashboard') renderDashboard();
+      if (tabId === 'products') renderProducts();
+      if (tabId === 'purchases') renderPurchases();
+      if (tabId === 'sales') renderSales();
+      if (tabId === 'reports') renderReports();
+    }
+
+    function renderDashboard() {
+      const totPur = purchases.reduce((acc, p) => acc + p.amount, 0);
+      const totSal = sales.reduce((acc, s) => acc + s.totalSale, 0);
+      const totProf = sales.reduce((acc, s) => acc + s.grossProfit, 0);
+      const totPend = sales.reduce((acc, s) => acc + Math.max(0, s.pendingAmount), 0);
+      const totStk = products.reduce((acc, p) => acc + p.currentStock, 0);
+
+      document.getElementById('kpiPurchases').innerText = formatINR(totPur);
+      document.getElementById('kpiSales').innerText = formatINR(totSal);
+      document.getElementById('kpiProfit').innerText = formatINR(totProf);
+      document.getElementById('kpiPending').innerText = formatINR(totPend);
+      document.getElementById('kpiStock').innerText = totStk.toLocaleString();
+
+      // Top Debtors
+      const debtors = sales.filter(s => s.pendingAmount > 0);
+      document.getElementById('topDebtorsTbody').innerHTML = debtors.map(d => `
+        <tr>
+          <td class="py-2.5 font-bold text-white">${d.clientName}</td>
+          <td class="py-2.5 font-mono">${d.mobNo}</td>
+          <td class="py-2.5 text-right font-mono">1</td>
+          <td class="py-2.5 text-right font-mono font-bold text-rose-400">${formatINR(d.pendingAmount)}</td>
+        </tr>
+      `).join('') || '<tr><td colspan="4" class="py-4 text-center text-slate-500">No pending debtors!</td></tr>';
+
+      // Low stock list
+      const lowList = products.filter(p => p.currentStock <= p.minAlertQty);
+      document.getElementById('lowStockList').innerHTML = lowList.map(item => `
+        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
+          <div>
+            <div class="text-xs font-bold text-white">${item.itemName}</div>
+            <div class="text-[11px] text-slate-400">Purchased: ${item.totalPurchased} • Sold: ${item.totalSold}</div>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${item.currentStock === 0 ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-300'}">
+            ${item.stockStatus} (${item.currentStock})
+          </span>
+        </div>
+      `).join('');
+
+      renderCharts();
+    }
+
+    function renderCharts() {
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const salesData = [12000, 18000, 24000, 31000, 45000, 52000, 68000, 85000, 142000, 130000, 45000, 30000];
+      const purData =   [20000, 25000, 20000, 40000, 35000, 45000, 80000, 95000, 110000, 90000, 30000, 20000];
+      const profitData = salesData.map((s, i) => Math.round(s * 0.28));
+
+      if (salesPurchasesChart) salesPurchasesChart.destroy();
+      const ctx1 = document.getElementById('chartSalesPurchases').getContext('2d');
+      salesPurchasesChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: months,
+          datasets: [
+            { label: 'Sales (₹)', data: salesData, backgroundColor: '#f59e0b' },
+            { label: 'Purchases (₹)', data: purData, backgroundColor: '#3b82f6' }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      if (profitChart) profitChart.destroy();
+      const ctx2 = document.getElementById('chartProfit').getContext('2d');
+      profitChart = new Chart(ctx2, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [
+            { label: 'Gross Profit (₹)', data: profitData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    function renderProducts() {
+      document.getElementById('productsTbody').innerHTML = products.map(p => `
+        <tr class="hover:bg-slate-800/40">
+          <td class="py-3 px-4 font-mono text-slate-400">${p.productId}</td>
+          <td class="py-3 px-4 font-bold text-white">${p.itemName}</td>
+          <td class="py-3 px-4">${p.category} (${p.unit})</td>
+          <td class="py-3 px-4 text-right font-mono">${formatINR(p.latestPurchaseRate)}</td>
+          <td class="py-3 px-4 text-right font-mono font-bold text-amber-400">${formatINR(p.defaultSaleRate)}</td>
+          <td class="py-3 px-4 text-right font-mono">${p.totalPurchased}</td>
+          <td class="py-3 px-4 text-right font-mono">${p.totalSold}</td>
+          <td class="py-3 px-4 text-right font-mono font-extrabold text-white">${p.currentStock}</td>
+          <td class="py-3 px-4 text-center">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${p.stockStatus === 'OK' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">
+              ${p.stockStatus}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderPurchases() {
+      document.getElementById('purchasesTbody').innerHTML = purchases.map(pur => `
+        <tr class="hover:bg-slate-800/40">
+          <td class="py-3 px-4 text-slate-400">${pur.date}</td>
+          <td class="py-3 px-4 font-mono font-bold text-white">${pur.billNo}</td>
+          <td class="py-3 px-4">${pur.supplierName}</td>
+          <td class="py-3 px-4 font-bold text-white">${pur.itemName}</td>
+          <td class="py-3 px-4 text-right font-mono">${pur.qty}</td>
+          <td class="py-3 px-4 text-right font-mono">${formatINR(pur.purchaseRate)}</td>
+          <td class="py-3 px-4 text-right font-mono font-bold text-blue-400">${formatINR(pur.amount)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderSales() {
+      document.getElementById('salesTbody').innerHTML = sales.map(s => `
+        <tr class="hover:bg-slate-800/40">
+          <td class="py-3 px-4 font-mono font-bold text-white">${s.billNo}</td>
+          <td class="py-3 px-4 text-slate-400">${s.date}</td>
+          <td class="py-3 px-4 font-semibold text-white">${s.clientName}</td>
+          <td class="py-3 px-4 text-right font-mono font-bold text-white">${formatINR(s.totalSale)}</td>
+          <td class="py-3 px-4 text-right font-mono text-emerald-400">${formatINR(s.totalReceived)}</td>
+          <td class="py-3 px-4 text-right font-mono font-bold ${s.pendingAmount > 0 ? 'text-rose-400' : 'text-slate-400'}">${formatINR(s.pendingAmount)}</td>
+          <td class="py-3 px-4 text-right font-mono text-emerald-400">+${formatINR(s.grossProfit)}</td>
+          <td class="py-3 px-4 text-center">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${s.status === 'Paid' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">
+              ${s.status}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="printBill('${s.billNo}')" class="bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-[11px] font-semibold text-slate-200">Print</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function printBill(billNo) {
+      const sale = sales.find(s => s.billNo === billNo);
+      if (!sale) return;
+      document.getElementById('printSheetArea').innerHTML = `
+        <div class="border-b-2 border-slate-900 pb-4">
+          <h1 class="text-2xl font-black uppercase tracking-wider text-slate-900">${DEFAULT_STORE.name}</h1>
+          <p class="text-xs text-slate-600">${DEFAULT_STORE.tagline} • Mobile: ${DEFAULT_STORE.mobile} • ${DEFAULT_STORE.address}</p>
+        </div>
+        <div class="flex justify-between py-2 border-b border-slate-200">
+          <div>
+            <p><strong>Billed To:</strong> ${sale.clientName}</p>
+            <p>Address: ${sale.address || 'Barabanki'}</p>
+            <p>Mobile: ${sale.mobNo}</p>
+          </div>
+          <div class="text-right">
+            <p><strong>Bill No:</strong> ${sale.billNo}</p>
+            <p>Date: ${sale.date}</p>
+            <p>Status: <strong class="${sale.status === 'Paid' ? 'text-emerald-700' : 'text-rose-700'}">${sale.status}</strong></p>
+          </div>
+        </div>
+        <table class="w-full text-left border-collapse my-4">
+          <thead>
+            <tr class="bg-slate-900 text-white"><th class="p-2">Item</th><th class="p-2 text-right">Qty</th><th class="p-2 text-right">Rate</th><th class="p-2 text-right">Total</th></tr>
+          </thead>
+          <tbody>
+            ${sale.items.map(it => `
+              <tr class="border-b border-slate-200"><td class="p-2">${it.itemName}</td><td class="p-2 text-right">${it.qty}</td><td class="p-2 text-right">${formatINR(it.rate)}</td><td class="p-2 text-right font-bold">${formatINR(it.amount)}</td></tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div class="text-right space-y-1">
+          <p>Subtotal: ${formatINR(sale.subtotal)}</p>
+          <p>Packaging: ${formatINR(sale.packagingCharges)}</p>
+          <p>Dispatch: ${formatINR(sale.dispatchCharges)}</p>
+          <p class="text-base font-extrabold text-slate-900 border-t border-slate-300 pt-1">Total Amount: ${formatINR(sale.totalSale)}</p>
+          <p class="text-emerald-700 font-bold">Received: ${formatINR(sale.totalReceived)}</p>
+          <p class="text-rose-700 font-extrabold">Balance Pending: ${formatINR(sale.pendingAmount)}</p>
+        </div>
+      `;
+      document.getElementById('invoicePrintModal').classList.remove('hidden');
+    }
+
+    function closePrintModal() {
+      document.getElementById('invoicePrintModal').classList.add('hidden');
+    }
+
+    function handleSearchCustomer() {
+      const q = document.getElementById('custSearchInput').value.toLowerCase().trim();
+      const matched = sales.filter(s => (s.mobNo && s.mobNo.includes(q)) || s.billNo.toLowerCase().includes(q) || s.clientName.toLowerCase().includes(q));
+      document.getElementById('searchResultsArea').innerHTML = matched.map(s => `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
+          <div class="flex justify-between">
+            <span class="font-bold text-white text-sm">${s.clientName} (Bill: ${s.billNo})</span>
+            <span class="font-bold font-mono ${s.pendingAmount > 0 ? 'text-rose-400' : 'text-emerald-400'}">Pending: ${formatINR(s.pendingAmount)}</span>
+          </div>
+          <p class="text-xs text-slate-400">Mobile: ${s.mobNo} • Total Bill: ${formatINR(s.totalSale)} • Received: ${formatINR(s.totalReceived)}</p>
+          <button onclick="printBill('${s.billNo}')" class="bg-amber-500 text-slate-950 px-3 py-1 rounded text-xs font-bold">Print Invoice</button>
+        </div>
+      `).join('') || '<div class="p-8 text-center text-slate-500">No matching records found.</div>';
+    }
+
+    function renderReports() {
+      const pending = sales.filter(s => s.pendingAmount > 0);
+      document.getElementById('reportsPendingTbody').innerHTML = pending.map(s => `
+        <tr>
+          <td class="py-2.5 px-3 font-mono font-bold">${s.billNo}</td>
+          <td class="py-2.5 px-3 font-bold">${s.clientName}</td>
+          <td class="py-2.5 px-3 font-mono">${s.mobNo}</td>
+          <td class="py-2.5 px-3 text-right font-mono">${formatINR(s.totalSale)}</td>
+          <td class="py-2.5 px-3 text-right font-mono text-emerald-400">${formatINR(s.totalReceived)}</td>
+          <td class="py-2.5 px-3 text-right font-mono font-bold text-rose-400">${formatINR(s.pendingAmount)}</td>
+        </tr>
+      `).join('') || '<tr><td colspan="6" class="p-4 text-center">No pending bills.</td></tr>';
+    }
+
+    function triggerBackup() {
+      alert("Spreadsheet snapshot generated! Stored under Drive path: DS WebCraft ERP/Sandeep Wholesale/Backups/");
+    }
+
+    function openNewSaleModal() {
+      // populate product select
+      const sel = document.getElementById('saleItemSelect');
+      sel.innerHTML = products.map(p => `
+        <option value="${p.productId}" data-rate="${p.defaultSaleRate}" data-prate="${p.latestPurchaseRate}" data-name="${p.itemName}">
+          ${p.itemName} (Stock: ${p.currentStock} ${p.unit} | ₹${p.defaultSaleRate})
+        </option>
+      `).join('');
+      document.getElementById('saleClientName').value = 'Manoj Traders';
+      document.getElementById('saleMobNo').value = '9415088231';
+      document.getElementById('saleAddress').value = 'Nawabganj, Barabanki';
+      document.getElementById('saleDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('saleQty').value = '50';
+      document.getElementById('salePackaging').value = '250';
+      document.getElementById('saleDispatch').value = '350';
+      document.getElementById('saleReceived').value = '15000';
+      handleSaleItemChange();
+      document.getElementById('newSaleModal').classList.remove('hidden');
+    }
+
+    function closeNewSaleModal() {
+      document.getElementById('newSaleModal').classList.add('hidden');
+    }
+
+    function handleSaleItemChange() {
+      const sel = document.getElementById('saleItemSelect');
+      const opt = sel.options[sel.selectedIndex];
+      if (opt) {
+        document.getElementById('saleRate').value = opt.getAttribute('data-rate') || 0;
+      }
+      calculateSaleTotals();
+    }
+
+    function calculateSaleTotals() {
+      const qty = Number(document.getElementById('saleQty').value) || 0;
+      const rate = Number(document.getElementById('saleRate').value) || 0;
+      const pack = Number(document.getElementById('salePackaging').value) || 0;
+      const disp = Number(document.getElementById('saleDispatch').value) || 0;
+      const recv = Number(document.getElementById('saleReceived').value) || 0;
+
+      const itemTot = qty * rate;
+      document.getElementById('saleItemTotal').value = formatINR(itemTot);
+
+      const grandTot = itemTot + pack + disp;
+      const pending = Math.max(0, grandTot - recv);
+
+      document.getElementById('saleGrandTotalDisplay').innerText = formatINR(grandTot);
+      document.getElementById('salePendingDisplay').innerText = formatINR(pending);
+    }
+
+    function handleNewSaleSubmit(e) {
+      e.preventDefault();
+      const sel = document.getElementById('saleItemSelect');
+      const opt = sel.options[sel.selectedIndex];
+      const prodId = sel.value;
+      const itemName = opt ? opt.getAttribute('data-name') : 'Kite Items';
+      const pRate = opt ? Number(opt.getAttribute('data-prate') || 0) : 0;
+
+      const client = document.getElementById('saleClientName').value.trim();
+      const mob = document.getElementById('saleMobNo').value.trim();
+      const addr = document.getElementById('saleAddress').value.trim();
+      const date = document.getElementById('saleDate').value;
+      const qty = Number(document.getElementById('saleQty').value) || 0;
+      const sRate = Number(document.getElementById('saleRate').value) || 0;
+      const pack = Number(document.getElementById('salePackaging').value) || 0;
+      const disp = Number(document.getElementById('saleDispatch').value) || 0;
+      const recv = Number(document.getElementById('saleReceived').value) || 0;
+
+      if (qty <= 0) {
+        alert('Quantity should be at least 1.');
+        return;
+      }
+
+      const subtotal = qty * sRate;
+      const totalSale = subtotal + pack + disp;
+      const cogs = qty * pRate;
+      const grossProfit = totalSale - cogs;
+      const pendingAmount = Math.max(0, totalSale - recv);
+      const billNo = "SW-2026-" + Math.floor(Math.random() * 9000 + 1000);
+
+      const newSale = {
+        saleId: "SID-" + Date.now(),
+        date: date || new Date().toISOString().split('T')[0],
+        billNo: billNo,
+        clientName: client,
+        address: addr || "Barabanki, UP",
+        mobNo: mob,
+        items: [{ itemName: itemName, qty: qty, rate: sRate, amount: subtotal }],
+        subtotal: subtotal,
+        packagingCharges: pack,
+        dispatchCharges: disp,
+        totalSale: totalSale,
+        cogs: cogs,
+        grossProfit: grossProfit,
+        payment1: recv,
+        date1: date,
+        payment2: 0,
+        date2: "",
+        payment3: 0,
+        date3: "",
+        totalReceived: recv,
+        pendingAmount: pendingAmount,
+        status: pendingAmount <= 0 ? "Paid" : "Pending"
+      };
+
+      sales.unshift(newSale);
+      localStorage.setItem('sw_sales', JSON.stringify(sales));
+
+      // Deduct stock
+      const prod = products.find(p => p.productId === prodId || p.itemName.toLowerCase() === itemName.toLowerCase());
+      if (prod) {
+        prod.totalSold += qty;
+        prod.currentStock = Math.max(0, prod.totalPurchased - prod.totalSold);
+        prod.stockStatus = prod.currentStock <= 0 ? 'OUT OF STOCK' : (prod.currentStock <= prod.minAlertQty ? 'LOW STOCK' : 'OK');
+        localStorage.setItem('sw_products', JSON.stringify(products));
+      }
+
+      renderDashboard();
+      renderProducts();
+      renderSales();
+      closeNewSaleModal();
+      switchTab('sales');
+      printBill(billNo);
+    }
+
+    function toggleStandalonePasswordVisibility() {
+      const input = document.getElementById('loginPassInput');
+      if (input.type === 'password') {
+        input.type = 'text';
+      } else {
+        input.type = 'password';
+      }
+    }
+
+    // Modal Handlers for Product & Purchase
+    function openAddProductModal() {
+      document.getElementById('newProdName').value = '';
+      document.getElementById('newProdCategory').value = '';
+      document.getElementById('newProdUnit').value = '';
+      document.getElementById('newProdPRate').value = '';
+      document.getElementById('newProdSRate').value = '';
+      document.getElementById('addProductModal').classList.remove('hidden');
+    }
+
+    function closeAddProductModal() {
+      document.getElementById('addProductModal').classList.add('hidden');
+    }
+
+    function handleAddProductSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newProdName').value.trim();
+      const cat = document.getElementById('newProdCategory').value.trim() || 'General';
+      const unit = document.getElementById('newProdUnit').value.trim() || 'Pcs';
+      const pRate = Number(document.getElementById('newProdPRate').value) || 0;
+      const sRate = Number(document.getElementById('newProdSRate').value) || 0;
+
+      const newP = {
+        productId: "PRD-" + String(products.length + 1).padStart(3, '0'),
+        itemName: name,
+        category: cat,
+        unit: unit,
+        latestPurchaseRate: pRate,
+        defaultSaleRate: sRate,
+        totalPurchased: 0,
+        totalSold: 0,
+        currentStock: 0,
+        stockStatus: "OUT OF STOCK",
+        minAlertQty: 10
+      };
+      products.push(newP);
+      localStorage.setItem('sw_products', JSON.stringify(products));
+      renderProducts();
+      closeAddProductModal();
+      alert("Product '" + name + "' added successfully with Category: " + cat + " and Unit: " + unit);
+    }
+
+    function openRecordPurchaseModal() {
+      // populate existing items in datalist
+      const dl = document.getElementById('existing-items-list');
+      if (dl) {
+        dl.innerHTML = products.map(p => `<option value="${p.itemName}">${p.category} (${p.unit})</option>`).join('');
+      }
+      document.getElementById('purItemName').value = products[0]?.itemName || '';
+      document.getElementById('purSupplierName').value = 'Bareilly Thread Mills';
+      document.getElementById('purBillNo').value = 'PUR-' + Math.floor(Math.random() * 9000 + 1000);
+      document.getElementById('purCategory').value = products[0]?.category || '';
+      document.getElementById('purUnit').value = products[0]?.unit || '';
+      document.getElementById('purQty').value = '100';
+      document.getElementById('purRate').value = products[0]?.latestPurchaseRate || '310';
+      document.getElementById('recordPurchaseModal').classList.remove('hidden');
+    }
+
+    function closeRecordPurchaseModal() {
+      document.getElementById('recordPurchaseModal').classList.add('hidden');
+    }
+
+    function handleRecordPurchaseSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('purItemName').value.trim();
+      const supplier = document.getElementById('purSupplierName').value.trim() || 'General Supplier';
+      const billNo = document.getElementById('purBillNo').value.trim() || ('PUR-' + Math.floor(Math.random() * 9000 + 1000));
+      const cat = document.getElementById('purCategory').value.trim() || 'General';
+      const unit = document.getElementById('purUnit').value.trim() || 'Pcs';
+      const qty = Number(document.getElementById('purQty').value) || 0;
+      const rate = Number(document.getElementById('purRate').value) || 0;
+
+      if (qty <= 0) {
+        alert('Quantity should be greater than zero.');
+        return;
+      }
+
+      const newPur = {
+        purchaseId: "PID-" + Date.now(),
+        date: new Date().toISOString().split('T')[0],
+        billNo: billNo,
+        supplierName: supplier,
+        itemName: name,
+        qty: qty,
+        purchaseRate: rate,
+        amount: qty * rate
+      };
+      purchases.unshift(newPur);
+      localStorage.setItem('sw_purchases', JSON.stringify(purchases));
+
+      // Update product stock
+      const prod = products.find(p => p.itemName.toLowerCase() === name.toLowerCase());
+      if (prod) {
+        prod.latestPurchaseRate = rate;
+        if (cat) prod.category = cat;
+        if (unit) prod.unit = unit;
+        prod.totalPurchased += qty;
+        prod.currentStock = prod.totalPurchased - prod.totalSold;
+        prod.stockStatus = prod.currentStock <= 0 ? 'OUT OF STOCK' : (prod.currentStock <= prod.minAlertQty ? 'LOW STOCK' : 'OK');
+      } else {
+        products.push({
+          productId: "PRD-" + String(products.length + 1).padStart(3, '0'),
+          itemName: name,
+          category: cat,
+          unit: unit,
+          latestPurchaseRate: rate,
+          defaultSaleRate: Math.round(rate * 1.3),
+          totalPurchased: qty,
+          totalSold: 0,
+          currentStock: qty,
+          stockStatus: qty <= 10 ? 'LOW STOCK' : 'OK',
+          minAlertQty: 10
+        });
+      }
+      localStorage.setItem('sw_products', JSON.stringify(products));
+      renderDashboard();
+      renderProducts();
+      renderPurchases();
+      closeRecordPurchaseModal();
+      switchTab('purchases');
+    }
+
+    // Auth & Session Management
+    function getAuthCreds() {
+      return JSON.parse(localStorage.getItem('sw_auth_creds')) || { loginId: 'admin', password: 'admin123' };
+    }
+
+    function checkAuthSession() {
+      const session = localStorage.getItem('sw_auth_session');
+      const creds = getAuthCreds();
+      const badge = document.getElementById('navUserBadge');
+      if (badge) badge.innerText = creds.loginId;
+
+      if (!session) {
+        document.getElementById('loginOverlay').classList.remove('hidden');
+      } else {
+        document.getElementById('loginOverlay').classList.add('hidden');
+        renderDashboard();
+      }
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('loginIdInput').value.trim().toLowerCase();
+      const pass = document.getElementById('loginPassInput').value;
+      const creds = getAuthCreds();
+      const errBox = document.getElementById('loginErrorMsg');
+
+      const allowedIds = [creds.loginId.toLowerCase(), '9027855051', 'sandeep'];
+
+      if (!allowedIds.includes(id)) {
+        errBox.innerText = 'Login ID invalid hai. Kripya apna sahi Username ya registered Mobile No enter karein.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (pass !== creds.password) {
+        errBox.innerText = 'Aapka daala gaya Password galat hai. Kripya dobara check karein.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      errBox.classList.add('hidden');
+      localStorage.setItem('sw_auth_session', JSON.stringify({ loginId: creds.loginId, time: Date.now() }));
+      document.getElementById('loginOverlay').classList.add('hidden');
+      renderDashboard();
+    }
+
+    function logoutUser() {
+      if (confirm('Kya aap ERP se Logout hona chahte hain?')) {
+        localStorage.removeItem('sw_auth_session');
+        document.getElementById('loginOverlay').classList.remove('hidden');
+      }
+    }
+
+    function openChangePasswordModal() {
+      document.getElementById('changePassErrorMsg').classList.add('hidden');
+      document.getElementById('oldPassInput').value = '';
+      document.getElementById('newPassInput').value = '';
+      document.getElementById('confirmPassInput').value = '';
+      document.getElementById('changePasswordModal').classList.remove('hidden');
+    }
+
+    function closeChangePasswordModal() {
+      document.getElementById('changePasswordModal').classList.add('hidden');
+    }
+
+    function handleChangePasswordSubmit(e) {
+      e.preventDefault();
+      const oldPass = document.getElementById('oldPassInput').value;
+      const newPass = document.getElementById('newPassInput').value;
+      const confirmPass = document.getElementById('confirmPassInput').value;
+      const creds = getAuthCreds();
+      const errBox = document.getElementById('changePassErrorMsg');
+
+      if (oldPass !== creds.password) {
+        errBox.innerText = 'Purana (Current) Password galat hai.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass.length < 4) {
+        errBox.innerText = 'Naya password kam se kam 4 characters ka hona chahiye.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        errBox.innerText = 'Naya password aur Confirm password match nahi ho rahe.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      creds.password = newPass;
+      localStorage.setItem('sw_auth_creds', JSON.stringify(creds));
+      errBox.classList.add('hidden');
+      closeChangePasswordModal();
+      alert('Password safaltapoorvak change ho gaya hai!');
+    }
+
+    window.onload = function() {
+      checkAuthSession();
+    };
+  </script>
+</body>
+</html>

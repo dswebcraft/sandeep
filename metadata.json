@@ -1,0 +1,8 @@
+{
+  "name": "Sandeep Wholesale ERP",
+  "description": "Enterprise Resource Planning and Ledger Management system for Sandeep Wholesale with Google Sheets & Drive synchronization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
